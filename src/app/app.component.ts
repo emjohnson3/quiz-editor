@@ -22,31 +22,28 @@ export class AppComponent implements OnInit{
 
   errorLoadingQuizzes = false;
 
-  ngOnInit() {
-    const data = this.quizSvc.loadQuizzes();
-    console.log(data);
+  loadQuizzesFromWeb = async () => {
 
-    data.subscribe({
-      next: (data) =>  {
-        console.log("data", data);
+    try {
 
-        this.quizzes = [
-          ...this.quizzes
-          , ...data.map(x => ({
-            quizName: x.name
-            , quizQuestions: x.questions.map((y: any) => ({
-              questionText: y.name
-            }))
-            , markedForDelete: false          
+      const data = await this.quizSvc.loadQuizzes();
+      console.log(data);      
+  
+      this.quizzes = data.map(x => ({
+        quizName: x.name
+        , quizQuestions: x.questions.map((y) => ({
+          questionText: y.name
         }))
-        ];
-        console.log(this.quizzes);
-      }
-      , error: (err) => {
-        console.error(err);
-        this.errorLoadingQuizzes = true;
-      }
-    });    
+        , markedForDelete: false
+      }));
+    } 
+    catch (err) {
+      console.log(err);
+    }   
+  };
+
+  ngOnInit() {
+    this.loadQuizzesFromWeb();
   }
 
   quizzes: QuizDisplay[] = [];
