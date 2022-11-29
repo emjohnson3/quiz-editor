@@ -163,4 +163,10 @@ export class AppComponent implements OnInit{
     this.loadQuizzesFromWeb();
     this.selectedQuiz = undefined;
   };
+
+  getDeletedQuizzes = () => this.quizzes.filter(x => x.markedForDelete);
+
+  get deletedQuizCount() {
+    return this.getDeletedQuizzes().length;
+  }
 }
