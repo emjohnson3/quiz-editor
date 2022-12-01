@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { QuizService } from './quiz.service';
+import { QuizService, ShapeForSavingEditedQuizzes, ShapeForSavingNewQuizzes } from './quiz.service';
 
 interface QuizDisplay {
   quizName: string;
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit() {
     this.loadQuizzesFromWeb();
-  }
+  };
 
   quizzes: QuizDisplay[] = [];
 
@@ -83,7 +83,7 @@ export class AppComponent implements OnInit{
     ];
 
     this.selectQuiz(newQuiz);
-  }
+  };
 
   addNewQuestion = () => {
     if (this.selectedQuiz != undefined) {
@@ -177,7 +177,7 @@ export class AppComponent implements OnInit{
 
   get deletedQuizCount() {
     return this.getDeletedQuizzes().length;
-  }
+  };
 
   getAddedQuizzes = () => this.quizzes.filter(x => 
     x.newlyAdded
@@ -186,7 +186,7 @@ export class AppComponent implements OnInit{
 
   get addedQuizCount() {
     return this.getAddedQuizzes().length;
-  }
+  };
 
   generateNaiveCheckSum = (q: QuizDisplay) => {
     return q.quizName
@@ -203,5 +203,32 @@ export class AppComponent implements OnInit{
 
   get editedQuizCount() {
     return this.getEditedQuizzes().length;
-  }
+  };
+
+  saveQuizzes = async () => {
+
+    try {
+
+      const newQuizzes: ShapeForSavingNewQuizzes[] = [];
+
+      const editedQuizzes: ShapeForSavingEditedQuizzes[] 
+        = this.getEditedQuizzes().map(x => ({
+          quiz: x.quizName
+          , questions: x.quizQuestions.map(y => ({
+            question: y.questionText
+          }))
+        }));
+
+      const numberOfEditedQuizzesSaved = await this.quizSvc.saveQuizzes(
+        editedQuizzes
+        , newQuizzes
+      );
+
+      console.log("numberOfEditedQuizzesSaved", numberOfEditedQuizzesSaved);
+    }
+
+    catch (e) {
+      console.error(e);
+    }
+  };
 }
